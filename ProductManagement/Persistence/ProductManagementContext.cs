@@ -3,7 +3,7 @@ using ProductManagement.Features.Products;
 
 namespace ProductManagement.Persistence;
 
-public class ProductManagementContext : DbContext
+public class ProductManagementContext(DbContextOptions<ProductManagementContext> options) : DbContext(options)
 {
     public DbSet<Product> Products { get; set; }
 }

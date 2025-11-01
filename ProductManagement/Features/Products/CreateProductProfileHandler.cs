@@ -5,12 +5,12 @@ using ProductManagement.Persistence;
 
 namespace ProductManagement.Features.Products;
 
-public class CreateProductProfileCommandHandler : IRequestHandler<CreateProductProfileCommand, ProductProfileDto>
+public class CreateProductProfileHandler : IRequestHandler<CreateProductProfileCommand, ProductProfileDto>
 {
     private readonly ProductManagementContext _context;
     private readonly IMapper _mapper;
     
-    public CreateProductProfileCommandHandler(ProductManagementContext context, IMapper mapper)
+    public CreateProductProfileHandler(ProductManagementContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
