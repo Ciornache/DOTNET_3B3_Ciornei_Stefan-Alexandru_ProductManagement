@@ -2,12 +2,12 @@
 
 public class MyLogEvents
 {
-    public int ProductCreationStarted = 2001;
-    public int ProductValidationFailed = 2002;
-    public int ProductCreateCompleted = 2003;
-    public int DatabaseOperationStarted = 2004;
-    public int DatabaseOperationCompleted = 2005;
-    public int CacheOperationStarted = 2006;
-    public int SKUValidationPerformed = 2007;
-    public int StockValidationPerformed = 2008;
+    public const int ProductCreationStarted = 2001;
+    public const int ProductValidationFailed = 2002;
+    public const int ProductCreateCompleted = 2003;
+    public const int DatabaseOperationStarted = 2004;
+    public const int DatabaseOperationCompleted = 2005;
+    public const int CacheOperationStarted = 2006;
+    public const int SKUValidationPerformed = 2007;
+    public const int StockValidationPerformed = 2008;
 }

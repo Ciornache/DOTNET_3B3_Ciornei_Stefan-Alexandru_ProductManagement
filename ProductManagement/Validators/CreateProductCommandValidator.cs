@@ -42,3 +42,4 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
             .WithMessage("Release date cannot be more than 1 year in the future");
     }
 }
+

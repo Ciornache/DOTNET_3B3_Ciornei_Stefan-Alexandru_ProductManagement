@@ -7,6 +7,9 @@ public class PriceFormattedResolver : IValueResolver<Product, ProductProfileDto,
 {
     public string Resolve(Product source, ProductProfileDto destination, string destMember, ResolutionContext context)
     {
-        return $"{source.Price:C2}";
+        // The discount is now applied in the main mapping profile, 
+        // this resolver is only for formatting.
+        var price = (decimal)context.Items["price"];
+        return $"{price:C2}";
     }
 }

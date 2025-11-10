@@ -179,15 +179,8 @@ public class CreateProductProfileValidator : AbstractValidator<CreateProductProf
     {
         _logger.LogInformation("Validating business rules for product: {Name}", command.Name);
         
-        if (command.Category == ProductCategory.Electronics)
-        {
-            var fiveYearsAgo = DateTime.Now.AddYears(-5);
-            if (command.ReleaseDate < fiveYearsAgo)
-            {
-                _logger.LogWarning("Electronics product {Name} has release date older than 5 years", command.Name);
-                return false;
-            }
-        }
+        // The 5-year check for electronics is already handled by IsValidElectronicProduct rule.
+        // This check is now redundant and has been removed to avoid conflicts.
 
         if (command.Category == ProductCategory.Books && command.StockQuantity > 50000)
         {

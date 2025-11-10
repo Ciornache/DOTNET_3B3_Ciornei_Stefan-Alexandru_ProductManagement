@@ -19,10 +19,9 @@ public class AdvancedProductMappingProfile : Profile
             .ForMember(dest => dest.AvailabilityStatus, opt => opt.MapFrom<AvailabilityStatusResolver>())
             .ForMember(dest => dest.BrandInitials, opt => opt.MapFrom<BrandInitialsResolver>())
             .ForMember(dest => dest.ProductAge, opt => opt.MapFrom<ProductAgeResolver>())
-            .ForMember(dest => dest.FormattedPrice, opt => opt.MapFrom<PriceFormattedResolver>())
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => 
                 src.Category == ProductCategory.Home ? null : src.ImageUrl))
-            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => 
-                src.Category == ProductCategory.Home ? src.Price * 0.9m : src.Price));
+            .ForMember(dest => dest.FormattedPrice, opt => opt.MapFrom(src => 
+                (src.Category == ProductCategory.Home ? src.Price * 0.9m : src.Price).ToString("C2")));
     }
 }
