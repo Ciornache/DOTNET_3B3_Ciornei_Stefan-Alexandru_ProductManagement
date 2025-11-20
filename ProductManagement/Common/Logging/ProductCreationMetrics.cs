@@ -1,4 +1,7 @@
-﻿namespace ProductManagement.Features.Products;
+﻿using ProductManagement.Features.Products;
+
+namespace ProductManagement.Common.Logging;
+
 
 public record ProductCreationMetrics
 {
@@ -12,3 +15,4 @@ public record ProductCreationMetrics
     public required bool Success { get; init; }
     public string? ErrorReason { get; init; }
 }
+

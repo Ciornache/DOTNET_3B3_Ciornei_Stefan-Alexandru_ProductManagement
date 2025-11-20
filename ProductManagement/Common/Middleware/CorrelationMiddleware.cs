@@ -1,4 +1,4 @@
-﻿namespace ProductManagement.Middleware;
+﻿namespace ProductManagement.Common.Middleware;
 
 public class CorrelationMiddleware
 {

@@ -3,11 +3,10 @@ using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ProductManagement.Features.Products;
-using ProductManagement.Features.Products.Mappers;
-using ProductManagement.Mappers;
+using ProductManagement.Common.Mapping;
 using ProductManagement.Persistence;
 using ProductManagement.Validators;
-using ProductManagement.Middleware;
+using ProductManagement.Common.Middleware;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()

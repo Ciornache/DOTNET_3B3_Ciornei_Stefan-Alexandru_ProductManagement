@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using ProductManagement.Features.Products.DTOs;
 
-namespace ProductManagement.Mappers;
+namespace ProductManagement.Common.Mapping;
 
 public class ProductMappingProfile : Profile
 {

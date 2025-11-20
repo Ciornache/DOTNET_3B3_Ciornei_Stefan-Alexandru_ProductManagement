@@ -1,4 +1,4 @@
-﻿namespace ProductManagement.LogEventsConstants;
+﻿namespace ProductManagement.Common.Logging;
 
 public class MyLogEvents
 {

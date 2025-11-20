@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
+using ProductManagement.Features.Products;
 using ProductManagement.Features.Products.DTOs;
 using ProductManagement.Features.Products.Resolvers;
 
-namespace ProductManagement.Features.Products.Mappers;
+namespace ProductManagement.Common.Mapping;
 
 public class AdvancedProductMappingProfile : Profile
 {

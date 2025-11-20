@@ -1,6 +1,6 @@
 using FluentValidation;
 using ProductManagement.Persistence;
-using ProductManagement.LogEventsConstants;
+using ProductManagement.Common.Logging;
 using System.Diagnostics;
 using AutoMapper;
 using ProductManagement.Features.Products.DTOs;
@@ -119,10 +119,7 @@ public class CreateProductHandler(ProductManagementContext context, ILogger<Crea
                     ErrorReason = null
                 };
                 
-                logger.LogInformation(
-                    MyLogEvents.ProductCreateCompleted,
-                    "Product creation completed successfully. {@ProductCreationMetrics}",
-                    metrics);
+                logger.LogProductCreationMetrics(metrics);
 
                 // Map the Product entity to ProductProfileDto
                 var productDto = mapper.Map<ProductProfileDto>(product);
@@ -146,9 +143,7 @@ public class CreateProductHandler(ProductManagementContext context, ILogger<Crea
                     ErrorReason = $"Validation failed: {string.Join("; ", ex.Errors.Select(e => e.ErrorMessage))}"
                 };
                 
-                logger.LogError(
-                    "Product creation failed due to validation. {@ProductCreationMetrics}",
-                    errorMetrics);
+                logger.LogProductCreationMetrics(errorMetrics);
                 
                 throw;
             }
@@ -169,10 +164,7 @@ public class CreateProductHandler(ProductManagementContext context, ILogger<Crea
                     ErrorReason = ex.Message
                 };
                 
-                logger.LogError(
-                    ex,
-                    "Product creation failed with exception. {@ProductCreationMetrics}",
-                    errorMetrics);
+                logger.LogProductCreationMetrics(errorMetrics);
                 
                 throw;
             }
