@@ -1,0 +1,417 @@
+2025-11-20 18:27:11.132 +02:00 [INF] Starting ProductManagement application
+2025-11-20 18:27:12.510 +02:00 [INF] Executed DbCommand (62ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2025-11-20 18:27:12.637 +02:00 [INF] Now listening on: http://localhost:5123
+2025-11-20 18:27:12.640 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-11-20 18:27:12.641 +02:00 [INF] Hosting environment: Development
+2025-11-20 18:27:12.642 +02:00 [INF] Content root path: F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement
+2025-11-20 18:28:09.402 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5123/swagger/v1/swagger.json - null null
+2025-11-20 18:28:09.708 +02:00 [INF] No action descriptors found. This may indicate an incorrectly configured application or missing application parts. To learn more, visit https://aka.ms/aspnet/mvc/app-parts
+2025-11-20 18:28:09.935 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5123/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 535.6609ms
+2025-11-20 18:28:16.357 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5123/products - null null
+2025-11-20 18:28:16.374 +02:00 [WRN] Failed to determine the https port for redirect.
+2025-11-20 18:28:16.379 +02:00 [INF] Executing endpoint 'HTTP: GET /products'
+2025-11-20 18:28:16.785 +02:00 [INF] Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "p"."Id", "p"."Brand", "p"."Category", "p"."CreatedAt", "p"."ImageUrl", "p"."IsAvailable", "p"."Name", "p"."Price", "p"."ReleaseDate", "p"."SKU", "p"."StockQuantity", "p"."UpdatedAt"
+FROM "Products" AS "p"
+2025-11-20 18:28:16.922 +02:00 [INF] Setting HTTP status code 200.
+2025-11-20 18:28:16.937 +02:00 [INF] Writing value of type 'List`1' as Json.
+2025-11-20 18:28:16.949 +02:00 [INF] Executed endpoint 'HTTP: GET /products'
+2025-11-20 18:28:16.961 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5123/products - 200 null application/json; charset=utf-8 604.8318ms
+2025-11-20 18:29:03.635 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5123/products - application/json 184
+2025-11-20 18:29:03.639 +02:00 [INF] CORS policy execution successful.
+2025-11-20 18:29:03.641 +02:00 [INF] Executing endpoint 'HTTP: POST /products'
+2025-11-20 18:29:03.760 +02:00 [INF] Starting product creation operation. OperationId: d959db65, Name: dym, Brand: dym, SKU: DYYM, Category: "Books"
+2025-11-20 18:29:03.762 +02:00 [INF] Performing stock validation for product: dym, StockQuantity: 50000
+2025-11-20 18:29:03.792 +02:00 [INF] Validating name: dym
+2025-11-20 18:29:03.795 +02:00 [INF] Checking uniqueness for Name: dym and Brand: dym
+2025-11-20 18:29:04.099 +02:00 [INF] Executed DbCommand (6ms) [Parameters=[@__name_0='?' (Size = 3), @__command_Brand_1='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."Name" = @__name_0 AND "p"."Brand" = @__command_Brand_1)
+2025-11-20 18:29:04.103 +02:00 [INF] Validating brand name: dym
+2025-11-20 18:29:04.123 +02:00 [INF] Validating SKU format: DYYM
+2025-11-20 18:29:04.126 +02:00 [INF] Checking SKU uniqueness: DYYM
+2025-11-20 18:29:04.132 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@__sku_0='?' (Size = 4)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."SKU" = @__sku_0)
+2025-11-20 18:29:04.168 +02:00 [INF] Validating image URL: dym.png
+2025-11-20 18:29:04.174 +02:00 [WRN] Product validation failed. OperationId: d959db65, SKU: DYYM, Name: dym, Errors: The length of 'SKU' must be at least 5 characters. You entered 4 characters.; Please specify a valid image URL, Duration: 411ms
+2025-11-20 18:29:04.184 +02:00 [ERR] Product creation failed due to validation. {"OperationId":"d959db65","ProductName":"dym","SKU":"DYYM","ProductCategory":"Books","ValidationDuration":"00:00:00","DatabaseSaveDuration":"00:00:00","TotalDuration":"00:00:00.4185257","Success":false,"ErrorReason":"Validation failed: The length of 'SKU' must be at least 5 characters. You entered 4 characters.; Please specify a valid image URL","$type":"ProductCreationMetrics"}
+2025-11-20 18:29:04.194 +02:00 [INF] Executed endpoint 'HTTP: POST /products'
+2025-11-20 18:29:04.208 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+FluentValidation.ValidationException: Validation failed: 
+ -- SKU: The length of 'SKU' must be at least 5 characters. You entered 4 characters. Severity: Error
+ -- ImageUrl: Please specify a valid image URL Severity: Error
+   at ProductManagement.Features.Products.CreateProductHandler.Handle(CreateProductProfileCommand command) in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Features\Products\CreateProductHandler.cs:line 52
+   at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Program.cs:line 116
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+   at Microsoft.AspNetCore.Http.RequestDelegateFactory.<>c__DisplayClass101_2.<<HandleRequestBodyAndCompileRequestDelegateForJson>b__2>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at ProductManagement.Middleware.CorrelationMiddleware.InvokeAsync(HttpContext context) in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Middleware\CorrelationMiddleware.cs:line 28
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-11-20 18:29:04.242 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5123/products - 500 null text/plain; charset=utf-8 607.0679ms
+2025-11-20 18:30:08.815 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5123/products - application/json 192
+2025-11-20 18:30:08.818 +02:00 [INF] CORS policy execution successful.
+2025-11-20 18:30:08.819 +02:00 [INF] Executing endpoint 'HTTP: POST /products'
+2025-11-20 18:30:08.823 +02:00 [INF] Starting product creation operation. OperationId: eb403c61, Name: dym, Brand: dym, SKU: DYYMMM, Category: "Electronics"
+2025-11-20 18:30:08.824 +02:00 [INF] Performing stock validation for product: dym, StockQuantity: 422
+2025-11-20 18:30:08.825 +02:00 [INF] Validating name: dym
+2025-11-20 18:30:08.826 +02:00 [INF] Checking uniqueness for Name: dym and Brand: dym
+2025-11-20 18:30:08.837 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@__name_0='?' (Size = 3), @__command_Brand_1='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."Name" = @__name_0 AND "p"."Brand" = @__command_Brand_1)
+2025-11-20 18:30:08.839 +02:00 [INF] Validating brand name: dym
+2025-11-20 18:30:08.840 +02:00 [INF] Validating SKU format: DYYMMM
+2025-11-20 18:30:08.842 +02:00 [INF] Checking SKU uniqueness: DYYMMM
+2025-11-20 18:30:08.844 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@__sku_0='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."SKU" = @__sku_0)
+2025-11-20 18:30:08.846 +02:00 [INF] Validating image URL: https://dym.png
+2025-11-20 18:30:08.849 +02:00 [INF] Validating electronics product: dym
+2025-11-20 18:30:08.850 +02:00 [WRN] Electronics product dym has price below $50
+2025-11-20 18:30:08.851 +02:00 [WRN] Product validation failed. OperationId: eb403c61, SKU: DYYMMM, Name: dym, Errors: Electronics product must meet specific requirements: price ≥ $50, contain technology keywords, and be released within 5 years, Duration: 26ms
+2025-11-20 18:30:08.854 +02:00 [ERR] Product creation failed due to validation. {"OperationId":"eb403c61","ProductName":"dym","SKU":"DYYMMM","ProductCategory":"Electronics","ValidationDuration":"00:00:00","DatabaseSaveDuration":"00:00:00","TotalDuration":"00:00:00.0293907","Success":false,"ErrorReason":"Validation failed: Electronics product must meet specific requirements: price ≥ $50, contain technology keywords, and be released within 5 years","$type":"ProductCreationMetrics"}
+2025-11-20 18:30:08.860 +02:00 [INF] Executed endpoint 'HTTP: POST /products'
+2025-11-20 18:30:08.861 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+FluentValidation.ValidationException: Validation failed: 
+ -- : Electronics product must meet specific requirements: price ≥ $50, contain technology keywords, and be released within 5 years Severity: Error
+   at ProductManagement.Features.Products.CreateProductHandler.Handle(CreateProductProfileCommand command) in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Features\Products\CreateProductHandler.cs:line 52
+   at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Program.cs:line 116
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+   at Microsoft.AspNetCore.Http.RequestDelegateFactory.<>c__DisplayClass101_2.<<HandleRequestBodyAndCompileRequestDelegateForJson>b__2>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at ProductManagement.Middleware.CorrelationMiddleware.InvokeAsync(HttpContext context) in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Middleware\CorrelationMiddleware.cs:line 28
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-11-20 18:30:08.865 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5123/products - 500 null text/plain; charset=utf-8 50.367ms
+2025-11-20 18:30:24.457 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5123/products - application/json 191
+2025-11-20 18:30:24.459 +02:00 [INF] CORS policy execution successful.
+2025-11-20 18:30:24.460 +02:00 [INF] Executing endpoint 'HTTP: POST /products'
+2025-11-20 18:30:24.468 +02:00 [INF] Starting product creation operation. OperationId: 76824d67, Name: dym, Brand: dym, SKU: DYYMMM, Category: "Electronics"
+2025-11-20 18:30:24.470 +02:00 [INF] Performing stock validation for product: dym, StockQuantity: 422
+2025-11-20 18:30:24.471 +02:00 [INF] Validating name: dym
+2025-11-20 18:30:24.472 +02:00 [INF] Checking uniqueness for Name: dym and Brand: dym
+2025-11-20 18:30:24.475 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@__name_0='?' (Size = 3), @__command_Brand_1='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."Name" = @__name_0 AND "p"."Brand" = @__command_Brand_1)
+2025-11-20 18:30:24.478 +02:00 [INF] Validating brand name: dym
+2025-11-20 18:30:24.478 +02:00 [INF] Validating SKU format: DYYMMM
+2025-11-20 18:30:24.479 +02:00 [INF] Checking SKU uniqueness: DYYMMM
+2025-11-20 18:30:24.495 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@__sku_0='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."SKU" = @__sku_0)
+2025-11-20 18:30:24.501 +02:00 [INF] Validating image URL: https://dym.png
+2025-11-20 18:30:24.502 +02:00 [INF] Validating electronics product: dym
+2025-11-20 18:30:24.506 +02:00 [INF] Checking technology keywords in name: dym
+2025-11-20 18:30:24.507 +02:00 [WRN] Electronics product dym does not contain technology keywords
+2025-11-20 18:30:24.508 +02:00 [WRN] Product validation failed. OperationId: 76824d67, SKU: DYYMMM, Name: dym, Errors: Electronics product must meet specific requirements: price ≥ $50, contain technology keywords, and be released within 5 years, Duration: 38ms
+2025-11-20 18:30:24.510 +02:00 [ERR] Product creation failed due to validation. {"OperationId":"76824d67","ProductName":"dym","SKU":"DYYMMM","ProductCategory":"Electronics","ValidationDuration":"00:00:00","DatabaseSaveDuration":"00:00:00","TotalDuration":"00:00:00.0422114","Success":false,"ErrorReason":"Validation failed: Electronics product must meet specific requirements: price ≥ $50, contain technology keywords, and be released within 5 years","$type":"ProductCreationMetrics"}
+2025-11-20 18:30:24.517 +02:00 [INF] Executed endpoint 'HTTP: POST /products'
+2025-11-20 18:30:24.518 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+FluentValidation.ValidationException: Validation failed: 
+ -- : Electronics product must meet specific requirements: price ≥ $50, contain technology keywords, and be released within 5 years Severity: Error
+   at ProductManagement.Features.Products.CreateProductHandler.Handle(CreateProductProfileCommand command) in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Features\Products\CreateProductHandler.cs:line 52
+   at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Program.cs:line 116
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+   at Microsoft.AspNetCore.Http.RequestDelegateFactory.<>c__DisplayClass101_2.<<HandleRequestBodyAndCompileRequestDelegateForJson>b__2>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at ProductManagement.Middleware.CorrelationMiddleware.InvokeAsync(HttpContext context) in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Middleware\CorrelationMiddleware.cs:line 28
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-11-20 18:30:24.524 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5123/products - 500 null text/plain; charset=utf-8 66.7167ms
+2025-11-20 18:30:28.298 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5123/products - application/json 191
+2025-11-20 18:30:28.300 +02:00 [INF] CORS policy execution successful.
+2025-11-20 18:30:28.301 +02:00 [INF] Executing endpoint 'HTTP: POST /products'
+2025-11-20 18:30:28.312 +02:00 [INF] Starting product creation operation. OperationId: 22d3d840, Name: dym, Brand: dym, SKU: DYYMMM, Category: "Electronics"
+2025-11-20 18:30:28.314 +02:00 [INF] Performing stock validation for product: dym, StockQuantity: 422
+2025-11-20 18:30:28.318 +02:00 [INF] Validating name: dym
+2025-11-20 18:30:28.319 +02:00 [INF] Checking uniqueness for Name: dym and Brand: dym
+2025-11-20 18:30:28.321 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@__name_0='?' (Size = 3), @__command_Brand_1='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."Name" = @__name_0 AND "p"."Brand" = @__command_Brand_1)
+2025-11-20 18:30:28.323 +02:00 [INF] Validating brand name: dym
+2025-11-20 18:30:28.324 +02:00 [INF] Validating SKU format: DYYMMM
+2025-11-20 18:30:28.325 +02:00 [INF] Checking SKU uniqueness: DYYMMM
+2025-11-20 18:30:28.327 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@__sku_0='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."SKU" = @__sku_0)
+2025-11-20 18:30:28.328 +02:00 [INF] Validating image URL: https://dym.png
+2025-11-20 18:30:28.329 +02:00 [INF] Validating electronics product: dym
+2025-11-20 18:30:28.330 +02:00 [INF] Checking technology keywords in name: dym
+2025-11-20 18:30:28.331 +02:00 [WRN] Electronics product dym does not contain technology keywords
+2025-11-20 18:30:28.331 +02:00 [WRN] Product validation failed. OperationId: 22d3d840, SKU: DYYMMM, Name: dym, Errors: Electronics product must meet specific requirements: price ≥ $50, contain technology keywords, and be released within 5 years, Duration: 17ms
+2025-11-20 18:30:28.333 +02:00 [ERR] Product creation failed due to validation. {"OperationId":"22d3d840","ProductName":"dym","SKU":"DYYMMM","ProductCategory":"Electronics","ValidationDuration":"00:00:00","DatabaseSaveDuration":"00:00:00","TotalDuration":"00:00:00.0208172","Success":false,"ErrorReason":"Validation failed: Electronics product must meet specific requirements: price ≥ $50, contain technology keywords, and be released within 5 years","$type":"ProductCreationMetrics"}
+2025-11-20 18:30:28.337 +02:00 [INF] Executed endpoint 'HTTP: POST /products'
+2025-11-20 18:30:28.339 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+FluentValidation.ValidationException: Validation failed: 
+ -- : Electronics product must meet specific requirements: price ≥ $50, contain technology keywords, and be released within 5 years Severity: Error
+   at ProductManagement.Features.Products.CreateProductHandler.Handle(CreateProductProfileCommand command) in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Features\Products\CreateProductHandler.cs:line 52
+   at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Program.cs:line 116
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+   at Microsoft.AspNetCore.Http.RequestDelegateFactory.<>c__DisplayClass101_2.<<HandleRequestBodyAndCompileRequestDelegateForJson>b__2>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at ProductManagement.Middleware.CorrelationMiddleware.InvokeAsync(HttpContext context) in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Middleware\CorrelationMiddleware.cs:line 28
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-11-20 18:30:28.342 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5123/products - 500 null text/plain; charset=utf-8 43.5822ms
+2025-11-20 18:30:59.372 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5123/products - application/json 196
+2025-11-20 18:30:59.374 +02:00 [INF] CORS policy execution successful.
+2025-11-20 18:30:59.375 +02:00 [INF] Executing endpoint 'HTTP: POST /products'
+2025-11-20 18:30:59.376 +02:00 [INF] Starting product creation operation. OperationId: e17a701c, Name: Tech dym, Brand: dym, SKU: DYYMMM, Category: "Electronics"
+2025-11-20 18:30:59.378 +02:00 [INF] Performing stock validation for product: Tech dym, StockQuantity: 422
+2025-11-20 18:30:59.378 +02:00 [INF] Validating name: Tech dym
+2025-11-20 18:30:59.379 +02:00 [INF] Checking uniqueness for Name: Tech dym and Brand: dym
+2025-11-20 18:30:59.383 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@__name_0='?' (Size = 8), @__command_Brand_1='?' (Size = 3)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."Name" = @__name_0 AND "p"."Brand" = @__command_Brand_1)
+2025-11-20 18:30:59.387 +02:00 [INF] Validating brand name: dym
+2025-11-20 18:30:59.388 +02:00 [INF] Validating SKU format: DYYMMM
+2025-11-20 18:30:59.389 +02:00 [INF] Checking SKU uniqueness: DYYMMM
+2025-11-20 18:30:59.391 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@__sku_0='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."SKU" = @__sku_0)
+2025-11-20 18:30:59.394 +02:00 [INF] Validating image URL: https://dym.png
+2025-11-20 18:30:59.394 +02:00 [INF] Validating electronics product: Tech dym
+2025-11-20 18:30:59.396 +02:00 [INF] Checking technology keywords in name: Tech dym
+2025-11-20 18:30:59.398 +02:00 [INF] Starting database operation for SKU: DYYMMM
+2025-11-20 18:30:59.799 +02:00 [INF] Executed DbCommand (171ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Size = 3), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (Size = 15), @p5='?' (DbType = Boolean), @p6='?' (Size = 8), @p7='?' (DbType = Decimal), @p8='?' (DbType = DateTime), @p9='?' (Size = 6), @p10='?' (DbType = Int32), @p11='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Products" ("Id", "Brand", "Category", "CreatedAt", "ImageUrl", "IsAvailable", "Name", "Price", "ReleaseDate", "SKU", "StockQuantity", "UpdatedAt")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11);
+2025-11-20 18:30:59.812 +02:00 [INF] Database operation completed. ProductId: "ae80ed57-a470-49e2-871c-3452ac67f3ab", SKU: DYYMMM, Duration: 414ms
+2025-11-20 18:30:59.814 +02:00 [INF] Cache invalidation triggered for cache key: all_products
+2025-11-20 18:30:59.815 +02:00 [INF] Product creation completed successfully. {"OperationId":"e17a701c","ProductName":"Tech dym","SKU":"DYYMMM","ProductCategory":"Electronics","ValidationDuration":"00:00:00.0199274","DatabaseSaveDuration":"00:00:00.4148447","TotalDuration":"00:00:00.4380224","Success":true,"ErrorReason":null,"$type":"ProductCreationMetrics"}
+2025-11-20 18:30:59.820 +02:00 [INF] Setting HTTP status code 201.
+2025-11-20 18:30:59.821 +02:00 [INF] Writing value of type 'Product' as Json.
+2025-11-20 18:30:59.822 +02:00 [INF] Executed endpoint 'HTTP: POST /products'
+2025-11-20 18:30:59.824 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5123/products - 201 null application/json; charset=utf-8 451.8516ms
+2025-11-20 18:32:31.361 +02:00 [INF] Application is shutting down...
+2025-11-20 18:51:26.958 +02:00 [INF] Starting ProductManagement application
+2025-11-20 18:51:28.136 +02:00 [INF] Executed DbCommand (25ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2025-11-20 18:51:28.255 +02:00 [INF] Now listening on: http://localhost:5123
+2025-11-20 18:51:28.258 +02:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-11-20 18:51:28.259 +02:00 [INF] Hosting environment: Development
+2025-11-20 18:51:28.260 +02:00 [INF] Content root path: F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement
+2025-11-20 18:51:32.666 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5123/index.html - null null
+2025-11-20 18:51:32.972 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5123/index.html - 200 null text/html;charset=utf-8 307.1451ms
+2025-11-20 18:51:33.132 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5123/swagger/v1/swagger.json - null null
+2025-11-20 18:51:33.155 +02:00 [INF] No action descriptors found. This may indicate an incorrectly configured application or missing application parts. To learn more, visit https://aka.ms/aspnet/mvc/app-parts
+2025-11-20 18:51:33.199 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5123/favicon-32x32.png - null null
+2025-11-20 18:51:33.222 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5123/favicon-32x32.png - 200 628 image/png 22.4417ms
+2025-11-20 18:51:33.352 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5123/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 221.9001ms
+2025-11-20 18:51:39.756 +02:00 [INF] Request starting HTTP/1.1 GET http://localhost:5123/products - null null
+2025-11-20 18:51:39.766 +02:00 [WRN] Failed to determine the https port for redirect.
+2025-11-20 18:51:39.774 +02:00 [INF] Executing endpoint 'HTTP: GET /products'
+2025-11-20 18:51:40.249 +02:00 [INF] Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "p"."Id", "p"."Brand", "p"."Category", "p"."CreatedAt", "p"."ImageUrl", "p"."IsAvailable", "p"."Name", "p"."Price", "p"."ReleaseDate", "p"."SKU", "p"."StockQuantity", "p"."UpdatedAt"
+FROM "Products" AS "p"
+2025-11-20 18:51:40.415 +02:00 [INF] Setting HTTP status code 200.
+2025-11-20 18:51:40.429 +02:00 [INF] Writing value of type 'List`1' as Json.
+2025-11-20 18:51:40.444 +02:00 [INF] Executed endpoint 'HTTP: GET /products'
+2025-11-20 18:51:40.451 +02:00 [INF] Request finished HTTP/1.1 GET http://localhost:5123/products - 200 null application/json; charset=utf-8 695.2472ms
+2025-11-20 18:52:20.713 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5123/products - application/json 198
+2025-11-20 18:52:20.717 +02:00 [INF] CORS policy execution successful.
+2025-11-20 18:52:20.720 +02:00 [INF] Executing endpoint 'HTTP: POST /products'
+2025-11-20 18:52:20.962 +02:00 [WRN] You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-11-20 18:52:20.967 +02:00 [INF] Starting product creation operation. OperationId: c77e47ba, Name: Strk, Brand: strak, SKU: STARKNET, Category: "4"
+2025-11-20 18:52:20.969 +02:00 [INF] Performing stock validation for product: Strk, StockQuantity: 424
+2025-11-20 18:52:20.987 +02:00 [INF] Validating name: Strk
+2025-11-20 18:52:20.990 +02:00 [INF] Checking uniqueness for Name: Strk and Brand: strak
+2025-11-20 18:52:21.223 +02:00 [INF] Executed DbCommand (5ms) [Parameters=[@__name_0='?' (Size = 4), @__command_Brand_1='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."Name" = @__name_0 AND "p"."Brand" = @__command_Brand_1)
+2025-11-20 18:52:21.227 +02:00 [INF] Validating brand name: strak
+2025-11-20 18:52:21.228 +02:00 [INF] Validating SKU format: STARKNET
+2025-11-20 18:52:21.231 +02:00 [INF] Checking SKU uniqueness: STARKNET
+2025-11-20 18:52:21.236 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@__sku_0='?' (Size = 8)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."SKU" = @__sku_0)
+2025-11-20 18:52:21.288 +02:00 [INF] Validating image URL: https://strk.jpg
+2025-11-20 18:52:21.294 +02:00 [WRN] Product validation failed. OperationId: c77e47ba, SKU: STARKNET, Name: Strk, Errors: Please specify a valid category, Duration: 324ms
+2025-11-20 18:52:21.307 +02:00 [ERR] Product creation failed due to validation. {"OperationId":"c77e47ba","ProductName":"Strk","SKU":"STARKNET","ProductCategory":"4","ValidationDuration":"00:00:00","DatabaseSaveDuration":"00:00:00","TotalDuration":"00:00:00.3316736","Success":false,"ErrorReason":"Validation failed: Please specify a valid category","$type":"ProductCreationMetrics"}
+2025-11-20 18:52:21.318 +02:00 [INF] Executed endpoint 'HTTP: POST /products'
+2025-11-20 18:52:21.321 +02:00 [ERR] An unhandled exception has occurred while executing the request.
+FluentValidation.ValidationException: Validation failed: 
+ -- Category: Please specify a valid category Severity: Error
+   at ProductManagement.Features.Products.CreateProductHandler.Handle(CreateProductProfileCommand command) in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Features\Products\CreateProductHandler.cs:line 54
+   at Program.<>c.<<<Main>$>b__0_5>d.MoveNext() in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Program.cs:line 116
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Http.RequestDelegateFactory.ExecuteTaskResult[T](Task`1 task, HttpContext httpContext)
+   at Microsoft.AspNetCore.Http.RequestDelegateFactory.<>c__DisplayClass101_2.<<HandleRequestBodyAndCompileRequestDelegateForJson>b__2>d.MoveNext()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at ProductManagement.Middleware.CorrelationMiddleware.InvokeAsync(HttpContext context) in F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement\Middleware\CorrelationMiddleware.cs:line 28
+   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-11-20 18:52:21.351 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5123/products - 500 null text/plain; charset=utf-8 637.8667ms
+2025-11-20 18:52:27.251 +02:00 [INF] Request starting HTTP/1.1 POST http://localhost:5123/products - application/json 198
+2025-11-20 18:52:27.254 +02:00 [INF] CORS policy execution successful.
+2025-11-20 18:52:27.255 +02:00 [INF] Executing endpoint 'HTTP: POST /products'
+2025-11-20 18:52:27.259 +02:00 [INF] Starting product creation operation. OperationId: 2256b903, Name: Strk, Brand: strak, SKU: STARKNET, Category: "Home"
+2025-11-20 18:52:27.260 +02:00 [INF] Performing stock validation for product: Strk, StockQuantity: 424
+2025-11-20 18:52:27.261 +02:00 [INF] Validating name: Strk
+2025-11-20 18:52:27.262 +02:00 [INF] Checking uniqueness for Name: Strk and Brand: strak
+2025-11-20 18:52:27.274 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@__name_0='?' (Size = 4), @__command_Brand_1='?' (Size = 5)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."Name" = @__name_0 AND "p"."Brand" = @__command_Brand_1)
+2025-11-20 18:52:27.276 +02:00 [INF] Validating brand name: strak
+2025-11-20 18:52:27.277 +02:00 [INF] Validating SKU format: STARKNET
+2025-11-20 18:52:27.278 +02:00 [INF] Checking SKU uniqueness: STARKNET
+2025-11-20 18:52:27.280 +02:00 [INF] Executed DbCommand (0ms) [Parameters=[@__sku_0='?' (Size = 8)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."SKU" = @__sku_0)
+2025-11-20 18:52:27.282 +02:00 [INF] Validating image URL: https://strk.jpg
+2025-11-20 18:52:27.284 +02:00 [INF] Checking home product appropriateness for name: Strk
+2025-11-20 18:52:27.286 +02:00 [INF] Starting database operation for SKU: STARKNET
+2025-11-20 18:52:27.593 +02:00 [INF] Executed DbCommand (128ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Size = 5), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (Size = 16), @p5='?' (DbType = Boolean), @p6='?' (Size = 4), @p7='?' (DbType = Decimal), @p8='?' (DbType = DateTime), @p9='?' (Size = 8), @p10='?' (DbType = Int32), @p11='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Products" ("Id", "Brand", "Category", "CreatedAt", "ImageUrl", "IsAvailable", "Name", "Price", "ReleaseDate", "SKU", "StockQuantity", "UpdatedAt")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11);
+2025-11-20 18:52:27.606 +02:00 [INF] Database operation completed. ProductId: "31e63e1f-5eae-463c-a39d-b1bb090d9f11", SKU: STARKNET, Duration: 320ms
+2025-11-20 18:52:27.608 +02:00 [INF] Cache invalidation triggered for cache key: all_products
+2025-11-20 18:52:27.612 +02:00 [INF] Product creation completed successfully. {"OperationId":"2256b903","ProductName":"Strk","SKU":"STARKNET","ProductCategory":"Home","ValidationDuration":"00:00:00.0253134","DatabaseSaveDuration":"00:00:00.3207609","TotalDuration":"00:00:00.3495671","Success":true,"ErrorReason":null,"$type":"ProductCreationMetrics"}
+2025-11-20 18:52:27.634 +02:00 [INF] Setting HTTP status code 201.
+2025-11-20 18:52:27.638 +02:00 [INF] Writing value of type 'ProductProfileDto' as Json.
+2025-11-20 18:52:27.644 +02:00 [INF] Executed endpoint 'HTTP: POST /products'
+2025-11-20 18:52:27.645 +02:00 [INF] Request finished HTTP/1.1 POST http://localhost:5123/products - 201 null application/json; charset=utf-8 394.0474ms
+2025-11-20 18:56:48.604 +02:00 [INF] Application is shutting down...
+2025-11-20 18:56:55.158 +02:00 [INF] {  } Starting ProductManagement application
+2025-11-20 18:56:56.384 +02:00 [INF] { EventId: { Id: 20101, Name: "Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted" }, SourceContext: "Microsoft.EntityFrameworkCore.Database.Command" } Executed DbCommand (19ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2025-11-20 18:56:56.484 +02:00 [INF] { EventId: { Id: 14, Name: "ListeningOnAddress" }, SourceContext: "Microsoft.Hosting.Lifetime" } Now listening on: http://localhost:5123
+2025-11-20 18:56:56.488 +02:00 [INF] { SourceContext: "Microsoft.Hosting.Lifetime" } Application started. Press Ctrl+C to shut down.
+2025-11-20 18:56:56.489 +02:00 [INF] { SourceContext: "Microsoft.Hosting.Lifetime" } Hosting environment: Development
+2025-11-20 18:56:56.490 +02:00 [INF] { SourceContext: "Microsoft.Hosting.Lifetime" } Content root path: F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement
+2025-11-20 18:57:01.271 +02:00 [INF] { EventId: { Id: 1 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8AN9HEPHB:00000001", RequestPath: "/index.html", ConnectionId: "0HNH8AN9HEPHB" } Request starting HTTP/1.1 GET http://localhost:5123/index.html - null null
+2025-11-20 18:57:01.729 +02:00 [INF] { EventId: { Id: 2 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8AN9HEPHB:00000001", RequestPath: "/index.html", ConnectionId: "0HNH8AN9HEPHB" } Request finished HTTP/1.1 GET http://localhost:5123/index.html - 200 null text/html;charset=utf-8 461.7962ms
+2025-11-20 18:57:02.165 +02:00 [INF] { EventId: { Id: 1 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8AN9HEPHB:00000002", RequestPath: "/swagger/v1/swagger.json", ConnectionId: "0HNH8AN9HEPHB" } Request starting HTTP/1.1 GET http://localhost:5123/swagger/v1/swagger.json - null null
+2025-11-20 18:57:02.406 +02:00 [INF] { EventId: { Id: 1, Name: "NoActionDescriptors" }, SourceContext: "Microsoft.AspNetCore.Mvc.Infrastructure.DefaultActionDescriptorCollectionProvider", RequestId: "0HNH8AN9HEPHB:00000002", RequestPath: "/swagger/v1/swagger.json", ConnectionId: "0HNH8AN9HEPHB" } No action descriptors found. This may indicate an incorrectly configured application or missing application parts. To learn more, visit https://aka.ms/aspnet/mvc/app-parts
+2025-11-20 18:57:02.839 +02:00 [INF] { EventId: { Id: 2 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8AN9HEPHB:00000002", RequestPath: "/swagger/v1/swagger.json", ConnectionId: "0HNH8AN9HEPHB" } Request finished HTTP/1.1 GET http://localhost:5123/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 675.458ms
+2025-11-20 18:57:07.697 +02:00 [INF] { EventId: { Id: 1 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8AN9HEPHB:00000003", RequestPath: "/products", ConnectionId: "0HNH8AN9HEPHB" } Request starting HTTP/1.1 GET http://localhost:5123/products - null null
+2025-11-20 18:57:07.710 +02:00 [WRN] { EventId: { Id: 3, Name: "FailedToDeterminePort" }, SourceContext: "Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware", CorrelationId: "4107aa47-6aef-40b9-8930-8737b428990f", RequestId: "0HNH8AN9HEPHB:00000003", RequestPath: "/products", ConnectionId: "0HNH8AN9HEPHB" } Failed to determine the https port for redirect.
+2025-11-20 18:57:07.716 +02:00 [INF] { EventId: { Name: "ExecutingEndpoint" }, SourceContext: "Microsoft.AspNetCore.Routing.EndpointMiddleware", CorrelationId: "4107aa47-6aef-40b9-8930-8737b428990f", RequestId: "0HNH8AN9HEPHB:00000003", RequestPath: "/products", ConnectionId: "0HNH8AN9HEPHB" } Executing endpoint 'HTTP: GET /products'
+2025-11-20 18:57:08.186 +02:00 [INF] { EventId: { Id: 20101, Name: "Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted" }, SourceContext: "Microsoft.EntityFrameworkCore.Database.Command", CorrelationId: "4107aa47-6aef-40b9-8930-8737b428990f", RequestId: "0HNH8AN9HEPHB:00000003", RequestPath: "/products", ConnectionId: "0HNH8AN9HEPHB" } Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "p"."Id", "p"."Brand", "p"."Category", "p"."CreatedAt", "p"."ImageUrl", "p"."IsAvailable", "p"."Name", "p"."Price", "p"."ReleaseDate", "p"."SKU", "p"."StockQuantity", "p"."UpdatedAt"
+FROM "Products" AS "p"
+2025-11-20 18:57:08.309 +02:00 [INF] { EventId: { Id: 1, Name: "WritingResultAsStatusCode" }, SourceContext: "Microsoft.AspNetCore.Http.Result.OkObjectResult", CorrelationId: "4107aa47-6aef-40b9-8930-8737b428990f", RequestId: "0HNH8AN9HEPHB:00000003", RequestPath: "/products", ConnectionId: "0HNH8AN9HEPHB" } Setting HTTP status code 200.
+2025-11-20 18:57:08.323 +02:00 [INF] { EventId: { Id: 3, Name: "WritingResultAsJson" }, SourceContext: "Microsoft.AspNetCore.Http.Result.OkObjectResult", CorrelationId: "4107aa47-6aef-40b9-8930-8737b428990f", RequestId: "0HNH8AN9HEPHB:00000003", RequestPath: "/products", ConnectionId: "0HNH8AN9HEPHB" } Writing value of type 'List`1' as Json.
+2025-11-20 18:57:08.342 +02:00 [INF] { EventId: { Id: 1, Name: "ExecutedEndpoint" }, SourceContext: "Microsoft.AspNetCore.Routing.EndpointMiddleware", CorrelationId: "4107aa47-6aef-40b9-8930-8737b428990f", RequestId: "0HNH8AN9HEPHB:00000003", RequestPath: "/products", ConnectionId: "0HNH8AN9HEPHB" } Executed endpoint 'HTTP: GET /products'
+2025-11-20 18:57:08.364 +02:00 [INF] { EventId: { Id: 2 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8AN9HEPHB:00000003", RequestPath: "/products", ConnectionId: "0HNH8AN9HEPHB" } Request finished HTTP/1.1 GET http://localhost:5123/products - 200 null application/json; charset=utf-8 667.2194ms
+2025-11-20 19:10:54.815 +02:00 [INF] { SourceContext: "Microsoft.Hosting.Lifetime" } Application is shutting down...
+2025-11-20 19:11:00.688 +02:00 [INF] {  } Starting ProductManagement application
+2025-11-20 19:11:01.948 +02:00 [INF] { EventId: { Id: 20101, Name: "Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted" }, SourceContext: "Microsoft.EntityFrameworkCore.Database.Command" } Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2025-11-20 19:11:02.049 +02:00 [INF] { EventId: { Id: 14, Name: "ListeningOnAddress" }, SourceContext: "Microsoft.Hosting.Lifetime" } Now listening on: http://localhost:5123
+2025-11-20 19:11:02.052 +02:00 [INF] { SourceContext: "Microsoft.Hosting.Lifetime" } Application started. Press Ctrl+C to shut down.
+2025-11-20 19:11:02.054 +02:00 [INF] { SourceContext: "Microsoft.Hosting.Lifetime" } Hosting environment: Development
+2025-11-20 19:11:02.055 +02:00 [INF] { SourceContext: "Microsoft.Hosting.Lifetime" } Content root path: F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement
+2025-11-20 19:11:07.387 +02:00 [INF] { EventId: { Id: 1 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8AV5L85DP:00000001", RequestPath: "/swagger/v1/swagger.json", ConnectionId: "0HNH8AV5L85DP" } Request starting HTTP/1.1 GET http://localhost:5123/swagger/v1/swagger.json - null null
+2025-11-20 19:11:07.722 +02:00 [INF] { EventId: { Id: 1, Name: "NoActionDescriptors" }, SourceContext: "Microsoft.AspNetCore.Mvc.Infrastructure.DefaultActionDescriptorCollectionProvider", RequestId: "0HNH8AV5L85DP:00000001", RequestPath: "/swagger/v1/swagger.json", ConnectionId: "0HNH8AV5L85DP" } No action descriptors found. This may indicate an incorrectly configured application or missing application parts. To learn more, visit https://aka.ms/aspnet/mvc/app-parts
+2025-11-20 19:11:08.384 +02:00 [INF] { EventId: { Id: 2 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8AV5L85DP:00000001", RequestPath: "/swagger/v1/swagger.json", ConnectionId: "0HNH8AV5L85DP" } Request finished HTTP/1.1 GET http://localhost:5123/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 997.0692ms
+2025-11-20 19:11:32.468 +02:00 [INF] { EventId: { Id: 1 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8AV5L85DP:00000002", RequestPath: "/products", ConnectionId: "0HNH8AV5L85DP" } Request starting HTTP/1.1 GET http://localhost:5123/products - null null
+2025-11-20 19:11:32.489 +02:00 [WRN] { EventId: { Id: 3, Name: "FailedToDeterminePort" }, SourceContext: "Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware", CorrelationId: "f2d0d1b9-a104-4958-809e-1bc0068f7389", RequestId: "0HNH8AV5L85DP:00000002", RequestPath: "/products", ConnectionId: "0HNH8AV5L85DP" } Failed to determine the https port for redirect.
+2025-11-20 19:11:32.495 +02:00 [INF] { EventId: { Name: "ExecutingEndpoint" }, SourceContext: "Microsoft.AspNetCore.Routing.EndpointMiddleware", CorrelationId: "f2d0d1b9-a104-4958-809e-1bc0068f7389", RequestId: "0HNH8AV5L85DP:00000002", RequestPath: "/products", ConnectionId: "0HNH8AV5L85DP" } Executing endpoint 'HTTP: GET /products'
+2025-11-20 19:11:32.912 +02:00 [INF] { EventId: { Id: 20101, Name: "Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted" }, SourceContext: "Microsoft.EntityFrameworkCore.Database.Command", CorrelationId: "f2d0d1b9-a104-4958-809e-1bc0068f7389", RequestId: "0HNH8AV5L85DP:00000002", RequestPath: "/products", ConnectionId: "0HNH8AV5L85DP" } Executed DbCommand (3ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "p"."Id", "p"."Brand", "p"."Category", "p"."CreatedAt", "p"."ImageUrl", "p"."IsAvailable", "p"."Name", "p"."Price", "p"."ReleaseDate", "p"."SKU", "p"."StockQuantity", "p"."UpdatedAt"
+FROM "Products" AS "p"
+2025-11-20 19:11:33.050 +02:00 [INF] { EventId: { Id: 1, Name: "WritingResultAsStatusCode" }, SourceContext: "Microsoft.AspNetCore.Http.Result.OkObjectResult", CorrelationId: "f2d0d1b9-a104-4958-809e-1bc0068f7389", RequestId: "0HNH8AV5L85DP:00000002", RequestPath: "/products", ConnectionId: "0HNH8AV5L85DP" } Setting HTTP status code 200.
+2025-11-20 19:11:33.066 +02:00 [INF] { EventId: { Id: 3, Name: "WritingResultAsJson" }, SourceContext: "Microsoft.AspNetCore.Http.Result.OkObjectResult", CorrelationId: "f2d0d1b9-a104-4958-809e-1bc0068f7389", RequestId: "0HNH8AV5L85DP:00000002", RequestPath: "/products", ConnectionId: "0HNH8AV5L85DP" } Writing value of type 'List`1' as Json.
+2025-11-20 19:11:33.085 +02:00 [INF] { EventId: { Id: 1, Name: "ExecutedEndpoint" }, SourceContext: "Microsoft.AspNetCore.Routing.EndpointMiddleware", CorrelationId: "f2d0d1b9-a104-4958-809e-1bc0068f7389", RequestId: "0HNH8AV5L85DP:00000002", RequestPath: "/products", ConnectionId: "0HNH8AV5L85DP" } Executed endpoint 'HTTP: GET /products'
+2025-11-20 19:11:33.098 +02:00 [INF] { EventId: { Id: 2 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8AV5L85DP:00000002", RequestPath: "/products", ConnectionId: "0HNH8AV5L85DP" } Request finished HTTP/1.1 GET http://localhost:5123/products - 200 null application/json; charset=utf-8 630.4769ms
+2025-11-20 19:13:51.677 +02:00 [INF] { SourceContext: "Microsoft.Hosting.Lifetime" } Application is shutting down...
+2025-11-20 19:14:03.113 +02:00 [INF] {  } Starting ProductManagement application
+2025-11-20 19:14:04.756 +02:00 [INF] { EventId: { Id: 20101, Name: "Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted" }, SourceContext: "Microsoft.EntityFrameworkCore.Database.Command" } Executed DbCommand (18ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT COUNT(*) FROM "sqlite_master" WHERE "type" = 'table' AND "rootpage" IS NOT NULL;
+2025-11-20 19:14:04.856 +02:00 [INF] { EventId: { Id: 14, Name: "ListeningOnAddress" }, SourceContext: "Microsoft.Hosting.Lifetime" } Now listening on: http://localhost:5123
+2025-11-20 19:14:04.860 +02:00 [INF] { SourceContext: "Microsoft.Hosting.Lifetime" } Application started. Press Ctrl+C to shut down.
+2025-11-20 19:14:04.862 +02:00 [INF] { SourceContext: "Microsoft.Hosting.Lifetime" } Hosting environment: Development
+2025-11-20 19:14:04.863 +02:00 [INF] { SourceContext: "Microsoft.Hosting.Lifetime" } Content root path: F:\General Info\Anul III\DOT Net\Individual Project\ProductManagement\ProductManagement
+2025-11-20 19:14:49.256 +02:00 [INF] { EventId: { Id: 1 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8B17OL0A9:00000001", RequestPath: "/swagger/v1/swagger.json", ConnectionId: "0HNH8B17OL0A9" } Request starting HTTP/1.1 GET http://localhost:5123/swagger/v1/swagger.json - null null
+2025-11-20 19:14:49.550 +02:00 [INF] { EventId: { Id: 1, Name: "NoActionDescriptors" }, SourceContext: "Microsoft.AspNetCore.Mvc.Infrastructure.DefaultActionDescriptorCollectionProvider", RequestId: "0HNH8B17OL0A9:00000001", RequestPath: "/swagger/v1/swagger.json", ConnectionId: "0HNH8B17OL0A9" } No action descriptors found. This may indicate an incorrectly configured application or missing application parts. To learn more, visit https://aka.ms/aspnet/mvc/app-parts
+2025-11-20 19:14:49.749 +02:00 [INF] { EventId: { Id: 2 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8B17OL0A9:00000001", RequestPath: "/swagger/v1/swagger.json", ConnectionId: "0HNH8B17OL0A9" } Request finished HTTP/1.1 GET http://localhost:5123/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 496.1662ms
+2025-11-20 19:14:57.294 +02:00 [INF] { EventId: { Id: 1 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8B17OL0A9:00000002", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Request starting HTTP/1.1 GET http://localhost:5123/products - null null
+2025-11-20 19:14:57.315 +02:00 [WRN] { EventId: { Id: 3, Name: "FailedToDeterminePort" }, SourceContext: "Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware", CorrelationId: "c7ff46b5-1be3-4953-93d1-7f30a369778b", RequestId: "0HNH8B17OL0A9:00000002", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Failed to determine the https port for redirect.
+2025-11-20 19:14:57.322 +02:00 [INF] { EventId: { Name: "ExecutingEndpoint" }, SourceContext: "Microsoft.AspNetCore.Routing.EndpointMiddleware", CorrelationId: "c7ff46b5-1be3-4953-93d1-7f30a369778b", RequestId: "0HNH8B17OL0A9:00000002", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Executing endpoint 'HTTP: GET /products'
+2025-11-20 19:14:57.808 +02:00 [INF] { EventId: { Id: 20101, Name: "Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted" }, SourceContext: "Microsoft.EntityFrameworkCore.Database.Command", CorrelationId: "c7ff46b5-1be3-4953-93d1-7f30a369778b", RequestId: "0HNH8B17OL0A9:00000002", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Executed DbCommand (4ms) [Parameters=[], CommandType='"Text"', CommandTimeout='30']
+SELECT "p"."Id", "p"."Brand", "p"."Category", "p"."CreatedAt", "p"."ImageUrl", "p"."IsAvailable", "p"."Name", "p"."Price", "p"."ReleaseDate", "p"."SKU", "p"."StockQuantity", "p"."UpdatedAt"
+FROM "Products" AS "p"
+2025-11-20 19:14:57.961 +02:00 [INF] { EventId: { Id: 1, Name: "WritingResultAsStatusCode" }, SourceContext: "Microsoft.AspNetCore.Http.Result.OkObjectResult", CorrelationId: "c7ff46b5-1be3-4953-93d1-7f30a369778b", RequestId: "0HNH8B17OL0A9:00000002", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Setting HTTP status code 200.
+2025-11-20 19:14:57.977 +02:00 [INF] { EventId: { Id: 3, Name: "WritingResultAsJson" }, SourceContext: "Microsoft.AspNetCore.Http.Result.OkObjectResult", CorrelationId: "c7ff46b5-1be3-4953-93d1-7f30a369778b", RequestId: "0HNH8B17OL0A9:00000002", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Writing value of type 'List`1' as Json.
+2025-11-20 19:14:57.996 +02:00 [INF] { EventId: { Id: 1, Name: "ExecutedEndpoint" }, SourceContext: "Microsoft.AspNetCore.Routing.EndpointMiddleware", CorrelationId: "c7ff46b5-1be3-4953-93d1-7f30a369778b", RequestId: "0HNH8B17OL0A9:00000002", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Executed endpoint 'HTTP: GET /products'
+2025-11-20 19:14:58.008 +02:00 [INF] { EventId: { Id: 2 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8B17OL0A9:00000002", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Request finished HTTP/1.1 GET http://localhost:5123/products - 200 null application/json; charset=utf-8 715.2498ms
+2025-11-20 19:16:45.814 +02:00 [INF] { EventId: { Id: 1 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Request starting HTTP/1.1 POST http://localhost:5123/products - application/json 200
+2025-11-20 19:16:45.821 +02:00 [INF] { EventId: { Id: 4, Name: "PolicySuccess" }, SourceContext: "Microsoft.AspNetCore.Cors.Infrastructure.CorsService", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } CORS policy execution successful.
+2025-11-20 19:16:45.827 +02:00 [INF] { EventId: { Name: "ExecutingEndpoint" }, SourceContext: "Microsoft.AspNetCore.Routing.EndpointMiddleware", CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Executing endpoint 'HTTP: POST /products'
+2025-11-20 19:16:46.160 +02:00 [WRN] { SourceContext: "LuckyPennySoftware.AutoMapper.License", CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } You do not have a valid license key for the Lucky Penny software AutoMapper. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-11-20 19:16:46.173 +02:00 [INF] { EventId: { Id: 2001 }, SourceContext: "ProductManagement.Features.Products.CreateProductHandler", ProductName: "dsada", CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Starting product creation operation. OperationId: 89ddb535, Name: dsada, Brand: DADSDS, SKU: FSFSDS, Category: "Clothing"
+2025-11-20 19:16:46.177 +02:00 [INF] { EventId: { Id: 2007 }, SourceContext: "ProductManagement.Features.Products.CreateProductHandler", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Performing SKU validation for product: dsada, SKU: FSFSDS
+2025-11-20 19:16:46.184 +02:00 [INF] { EventId: { Id: 2008 }, SourceContext: "ProductManagement.Features.Products.CreateProductHandler", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", SKU: "FSFSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Performing stock validation for product: dsada, StockQuantity: 2423
+2025-11-20 19:16:46.215 +02:00 [INF] { SourceContext: "ProductManagement.Validators.CreateProductProfileValidator", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", SKU: "FSFSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Validating name: dsada
+2025-11-20 19:16:46.223 +02:00 [INF] { SourceContext: "ProductManagement.Validators.CreateProductProfileValidator", OperationId: "89ddb535", ProductName: "dsada", SKU: "FSFSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Checking uniqueness for Name: dsada and Brand: DADSDS
+2025-11-20 19:16:46.459 +02:00 [INF] { EventId: { Id: 20101, Name: "Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted" }, SourceContext: "Microsoft.EntityFrameworkCore.Database.Command", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", SKU: "FSFSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Executed DbCommand (6ms) [Parameters=[@__name_0='?' (Size = 5), @__command_Brand_1='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."Name" = @__name_0 AND "p"."Brand" = @__command_Brand_1)
+2025-11-20 19:16:46.468 +02:00 [INF] { SourceContext: "ProductManagement.Validators.CreateProductProfileValidator", OperationId: "89ddb535", ProductName: "dsada", SKU: "FSFSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Validating brand name: DADSDS
+2025-11-20 19:16:46.474 +02:00 [INF] { SourceContext: "ProductManagement.Validators.CreateProductProfileValidator", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Validating SKU format: FSFSDS
+2025-11-20 19:16:46.481 +02:00 [INF] { SourceContext: "ProductManagement.Validators.CreateProductProfileValidator", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Checking SKU uniqueness: FSFSDS
+2025-11-20 19:16:46.495 +02:00 [INF] { EventId: { Id: 20101, Name: "Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted" }, SourceContext: "Microsoft.EntityFrameworkCore.Database.Command", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", SKU: "FSFSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Executed DbCommand (0ms) [Parameters=[@__sku_0='?' (Size = 6)], CommandType='"Text"', CommandTimeout='30']
+SELECT EXISTS (
+    SELECT 1
+    FROM "Products" AS "p"
+    WHERE "p"."SKU" = @__sku_0)
+2025-11-20 19:16:46.532 +02:00 [INF] { SourceContext: "ProductManagement.Validators.CreateProductProfileValidator", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", SKU: "FSFSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Validating image URL: https://dsada.jpg
+2025-11-20 19:16:46.543 +02:00 [INF] { EventId: { Id: 2004 }, SourceContext: "ProductManagement.Features.Products.CreateProductHandler", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Starting database operation for SKU: FSFSDS
+2025-11-20 19:16:46.874 +02:00 [INF] { EventId: { Id: 20101, Name: "Microsoft.EntityFrameworkCore.Database.Command.CommandExecuted" }, SourceContext: "Microsoft.EntityFrameworkCore.Database.Command", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", SKU: "FSFSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Executed DbCommand (146ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (Size = 6), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (Size = 17), @p5='?' (DbType = Boolean), @p6='?' (Size = 5), @p7='?' (DbType = Decimal), @p8='?' (DbType = DateTime), @p9='?' (Size = 6), @p10='?' (DbType = Int32), @p11='?' (DbType = DateTime)], CommandType='"Text"', CommandTimeout='30']
+INSERT INTO "Products" ("Id", "Brand", "Category", "CreatedAt", "ImageUrl", "IsAvailable", "Name", "Price", "ReleaseDate", "SKU", "StockQuantity", "UpdatedAt")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11);
+2025-11-20 19:16:46.889 +02:00 [INF] { EventId: { Id: 2005 }, SourceContext: "ProductManagement.Features.Products.CreateProductHandler", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Database operation completed. ProductId: "82e6e8dc-846e-4673-849c-14ffe1cda30a", SKU: FSFSDS, Duration: 346ms
+2025-11-20 19:16:46.893 +02:00 [INF] { EventId: { Id: 2006 }, SourceContext: "ProductManagement.Features.Products.CreateProductHandler", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", SKU: "FSFSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Cache invalidation triggered for cache key: all_products
+2025-11-20 19:16:46.904 +02:00 [INF] { EventId: { Id: 2003 }, SourceContext: "ProductManagement.Features.Products.CreateProductHandler", OperationId: "89ddb535", ProductName: "dsada", Brand: "DADSDS", SKU: "FSFSDS", Category: Clothing, CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Product creation completed successfully. {"OperationId":"89ddb535","ProductName":"dsada","SKU":"FSFSDS","ProductCategory":"Clothing","ValidationDuration":"00:00:00.3654044","DatabaseSaveDuration":"00:00:00.3467013","TotalDuration":"00:00:00.7252123","Success":true,"ErrorReason":null,"$type":"ProductCreationMetrics"}
+2025-11-20 19:16:46.928 +02:00 [INF] { EventId: { Id: 1, Name: "WritingResultAsStatusCode" }, SourceContext: "Microsoft.AspNetCore.Http.Result.CreatedResult", CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Setting HTTP status code 201.
+2025-11-20 19:16:46.933 +02:00 [INF] { EventId: { Id: 3, Name: "WritingResultAsJson" }, SourceContext: "Microsoft.AspNetCore.Http.Result.CreatedResult", CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Writing value of type 'ProductProfileDto' as Json.
+2025-11-20 19:16:46.940 +02:00 [INF] { EventId: { Id: 1, Name: "ExecutedEndpoint" }, SourceContext: "Microsoft.AspNetCore.Routing.EndpointMiddleware", CorrelationId: "c53577a2-7001-4762-aab3-097bcd43b5c4", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Executed endpoint 'HTTP: POST /products'
+2025-11-20 19:16:46.944 +02:00 [INF] { EventId: { Id: 2 }, SourceContext: "Microsoft.AspNetCore.Hosting.Diagnostics", RequestId: "0HNH8B17OL0A9:00000003", RequestPath: "/products", ConnectionId: "0HNH8B17OL0A9" } Request finished HTTP/1.1 POST http://localhost:5123/products - 201 null application/json; charset=utf-8 1130.2209ms
+2025-11-20 19:20:51.218 +02:00 [INF] { SourceContext: "Microsoft.Hosting.Lifetime" } Application is shutting down...

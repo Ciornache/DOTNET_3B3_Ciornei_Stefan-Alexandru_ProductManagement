@@ -8,146 +8,153 @@ using ProductManagement.Mappers;
 using ProductManagement.Persistence;
 using ProductManagement.Validators;
 using ProductManagement.Middleware;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.File(
+        path: "logs/productmanagement-.log",
+        rollingInterval: RollingInterval.Day,
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Properties} {Message:lj}{NewLine}{Exception}",
+        retainedFileCountLimit: 30)
+    .WriteTo.Console(
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Properties} {Message:lj}{NewLine}{Exception}") 
+    .CreateLogger();
 
-builder.Services.AddSwaggerGen(c =>
+try
 {
-    c.SwaggerDoc
-    (
-        "v1",
-        new OpenApiInfo
-        {
-            Title = "Product Management API",
-            Version = "v1",
-            Description = "API for managing products with advanced validation and mapping.",
-            Contact = new OpenApiContact
-            {
-                Name = "API Support",
-                Email = "support@example.com",
-            }
-        });
-});
+    Log.Information("Starting ProductManagement application");
 
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<ProductManagementContext>(options =>
-    options.UseSqlite("Data Source=productmanagement.db"));
+    builder.Host.UseSerilog();
 
-// Register both AutoMapper profiles
-builder.Services.AddAutoMapper(cfg =>
-{
-    cfg.AddProfile<ProductMappingProfile>();
-    cfg.AddProfile<AdvancedProductMappingProfile>();
-}, typeof(ProductMappingProfile), typeof(AdvancedProductMappingProfile));
-
-builder.Services.AddScoped<CreateProductHandler>();
-builder.Services.AddScoped<GetAllProductsHandler>();
-builder.Services.AddScoped<DeleteProductHandler>();
-builder.Services.AddScoped<GetProductByIdHandler>();
-builder.Services.AddScoped<UpdateProductHandler>();
-
-// Register CreateProductProfileValidator as scoped service
-builder.Services.AddScoped<IValidator<CreateProductProfileCommand>, CreateProductProfileValidator>();
-
-// Register all validators from assembly containing CreateProductProfileValidator
-builder.Services.AddValidatorsFromAssemblyContaining<CreateProductProfileValidator>();
-builder.Services.AddFluentValidationAutoValidation();
-
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("DevCors", policy =>
+    builder.Services.AddSwaggerGen(c =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
-
-var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<ProductManagementContext>();
-    context.Database.EnsureCreated();
-}
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI
+        c.SwaggerDoc
         (
-            c=>
+            "v1",
+            new OpenApiInfo
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Product Management API V1");
-                c.RoutePrefix = string.Empty;
-                c.DisplayRequestDuration();
-            }
-        );
-    
-    app.MapOpenApi();
-}
-
-app.UseCors("DevCors");
-
-// Add CorrelationMiddleware to pipeline
-app.UseMiddleware<CorrelationMiddleware>();
-
-app.UseHttpsRedirection();
-
-// Update endpoint mapping to /products with product-specific documentation
-app.MapPost("/products", async (CreateProductProfileCommand req, CreateProductHandler handler) =>
-    await handler.Handle(req))
-    .WithName("CreateProduct")
-    .WithOpenApi(operation => new(operation)
-    {
-        Summary = "Create a new product",
-        Description = "Creates a new product with validation and advanced mapping support"
+                Title = "Product Management API",
+                Version = "v1",
+                Description = "API for managing products with advanced validation and mapping.",
+                Contact = new OpenApiContact
+                {
+                    Name = "API Support",
+                    Email = "support@example.com",
+                }
+            });
     });
 
-app.MapGet("/products", async (GetAllProductsHandler handler) =>
-    await handler.Handle(new GetAllProductsQuery()))
-    .WithName("GetAllProducts")
-    .WithOpenApi(operation => new(operation)
+
+    builder.Services.AddOpenApi();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddDbContext<ProductManagementContext>(options =>
+        options.UseSqlite("Data Source=productmanagement.db"));
+
+    builder.Services.AddAutoMapper(cfg =>
     {
-        Summary = "Get all products",
-        Description = "Retrieves all products with their profiles"
+        cfg.AddProfile<ProductMappingProfile>();
+        cfg.AddProfile<AdvancedProductMappingProfile>();
+    }, typeof(ProductMappingProfile), typeof(AdvancedProductMappingProfile));
+
+    builder.Services.AddScoped<CreateProductHandler>();
+    builder.Services.AddScoped<GetAllProductsHandler>();
+    builder.Services.AddScoped<DeleteProductHandler>();
+    builder.Services.AddScoped<GetProductByIdHandler>();
+
+    builder.Services.AddScoped<IValidator<CreateProductProfileCommand>, CreateProductProfileValidator>();
+
+    builder.Services.AddValidatorsFromAssemblyContaining<CreateProductProfileValidator>();
+    builder.Services.AddFluentValidationAutoValidation();
+
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("DevCors", policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
     });
 
-app.MapDelete("/products/{id:guid}", async (Guid id, DeleteProductHandler handler) =>
-{
-    await handler.Handle(new DeleteProductCommand(id));
-})
-.WithName("DeleteProduct")
-.WithOpenApi(operation => new(operation)
-{
-    Summary = "Delete a product",
-    Description = "Deletes a product by ID"
-});
+    var app = builder.Build();
 
-app.MapGet("/products/{id:guid}", async (Guid id, GetProductByIdHandler handler) =>
-    await handler.Handle(new GetProductByIdQuery(id)))
-    .WithName("GetProductById")
-    .WithOpenApi(operation => new(operation)
+    using (var scope = app.Services.CreateScope())
     {
-        Summary = "Get product by ID",
-        Description = "Retrieves a single product by its unique identifier"
-    });
+        var context = scope.ServiceProvider.GetRequiredService<ProductManagementContext>();
+        context.Database.EnsureCreated();
+    }
 
-app.MapPut("/products/{id:guid}",
-    async (Guid id, UpdateProductCommand request, UpdateProductHandler handler) =>
+    if (app.Environment.IsDevelopment())
     {
-        var updatedRequest = request with { Id = id };
-        var result = await handler.Handle(updatedRequest);
-        return result;
+        app.UseSwagger();
+        app.UseSwaggerUI
+            (
+                c=>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Product Management API V1");
+                    c.RoutePrefix = string.Empty;
+                    c.DisplayRequestDuration();
+                }
+            );
+        
+        app.MapOpenApi();
+    }
+
+    app.UseCors("DevCors");
+
+    app.UseMiddleware<CorrelationMiddleware>();
+
+    app.UseHttpsRedirection();
+
+    app.MapPost("/products", async (CreateProductProfileCommand req, CreateProductHandler handler) =>
+        await handler.Handle(req))
+        .WithName("CreateProduct")
+        .WithOpenApi(operation => new(operation)
+        {
+            Summary = "Create a new product",
+            Description = "Creates a new product with validation and advanced mapping support"
+        });
+
+    app.MapGet("/products", async (GetAllProductsHandler handler) =>
+        await handler.Handle(new GetAllProductsQuery()))
+        .WithName("GetAllProducts")
+        .WithOpenApi(operation => new(operation)
+        {
+            Summary = "Get all products",
+            Description = "Retrieves all products with their profiles"
+        });
+
+    app.MapDelete("/products/{id:guid}", async (Guid id, DeleteProductHandler handler) =>
+    {
+        await handler.Handle(new DeleteProductCommand(id));
     })
-    .WithName("UpdateProduct")
+    .WithName("DeleteProduct")
     .WithOpenApi(operation => new(operation)
     {
-        Summary = "Update a product",
-        Description = "Updates an existing product by ID"
+        Summary = "Delete a product",
+        Description = "Deletes a product by ID"
     });
 
-app.Run();
+    app.MapGet("/products/{id:guid}", async (Guid id, GetProductByIdHandler handler) =>
+        await handler.Handle(new GetProductByIdQuery(id)))
+        .WithName("GetProductById")
+        .WithOpenApi(operation => new(operation)
+        {
+            Summary = "Get product by ID",
+            Description = "Retrieves a single product by its unique identifier"
+        });
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application start-up failed");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

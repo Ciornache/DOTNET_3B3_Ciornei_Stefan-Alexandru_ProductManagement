@@ -16,7 +16,7 @@ public class CreateProductProfileHandler : IRequestHandler<CreateProductProfileC
         _mapper = mapper;
     }
     
-    public async Task<ProductProfileDto> Handle(CreateProductProfileCommand request, CancellationToken cancellationToken)
+    public Task<ProductProfileDto> Handle(CreateProductProfileCommand request, CancellationToken cancellationToken)
     {
         // Implementation will go here
         throw new NotImplementedException();

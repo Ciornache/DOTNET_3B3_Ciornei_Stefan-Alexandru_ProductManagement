@@ -82,17 +82,11 @@ public class CreateProductProfileValidator : AbstractValidator<CreateProductProf
             .Must(BeValidImageUrl).When(command => !string.IsNullOrEmpty(command.ImageUrl))
             .WithMessage("Please specify a valid image URL");
 
-        // General business rules
-        RuleFor(command => command)
-            .MustAsync(PassBusinessRules).WithMessage("Product does not meet business requirements");
-
-        // Electronics-specific validation
         RuleFor(command => command)
             .Must(IsValidElectronicProduct)
             .When(command => command.Category == ProductCategory.Electronics)
             .WithMessage("Electronics product must meet specific requirements: price ≥ $50, contain technology keywords, and be released within 5 years");
 
-        // Home products validation
         RuleFor(command => command.Price)
             .LessThanOrEqualTo(200m)
             .When(command => command.Category == ProductCategory.Home)
@@ -103,17 +97,30 @@ public class CreateProductProfileValidator : AbstractValidator<CreateProductProf
             .When(command => command.Category == ProductCategory.Home)
             .WithMessage("Product name contains inappropriate words for home products");
 
-        // Clothing products validation
         RuleFor(command => command.Brand)
             .MinimumLength(3)
             .When(command => command.Category == ProductCategory.Clothing)
             .WithMessage("Clothing brand name must be at least 3 characters");
 
-        // Cross-field validation: Expensive products must have limited stock
+        RuleFor(command => command.ImageUrl)
+            .NotEmpty()
+            .When(command => command.Category == ProductCategory.Clothing)
+            .WithMessage("Clothing products must have an image URL");
+
         RuleFor(command => command.StockQuantity)
             .LessThanOrEqualTo(20)
             .When(command => command.Price > 100m)
             .WithMessage("Expensive products (>$100) must have limited stock (≤20 units)");
+
+        RuleFor(command => command.StockQuantity)
+            .LessThanOrEqualTo(50000)
+            .When(command => command.Category == ProductCategory.Books)
+            .WithMessage("Books products cannot have stock quantity over 50,000");
+
+        RuleFor(command => command.SKU)
+            .Must((command, sku) => sku.StartsWith("PREM-"))
+            .When(command => command.Price > 500)
+            .WithMessage("Premium products (>$500) must have SKU starting with 'PREM-'");
     }
 
     private bool BeValidName(string name)
@@ -130,9 +137,7 @@ public class CreateProductProfileValidator : AbstractValidator<CreateProductProf
             .AnyAsync(p => p.Name == name && p.Brand == command.Brand, cancellationToken);
             
         if (exists)
-        {
             _logger.LogWarning("Product with Name: {Name} and Brand: {Brand} already exists", name, command.Brand);
-        }
         
         return !exists;
     }
@@ -174,58 +179,23 @@ public class CreateProductProfileValidator : AbstractValidator<CreateProductProf
         var urlPattern = @"^(http|https)://[a-zA-Z0-9./_-]+\.(jpg|png|gif|bmp)$";
         return System.Text.RegularExpressions.Regex.IsMatch(imageUrl, urlPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
     }
-
-    private async Task<bool> PassBusinessRules(CreateProductProfileCommand command, CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Validating business rules for product: {Name}", command.Name);
-        
-        // The 5-year check for electronics is already handled by IsValidElectronicProduct rule.
-        // This check is now redundant and has been removed to avoid conflicts.
-
-        if (command.Category == ProductCategory.Books && command.StockQuantity > 50000)
-        {
-            _logger.LogWarning("Books product {Name} has stock quantity over 50,000", command.Name);
-            return false;
-        }
-
-        if (command.Category == ProductCategory.Clothing && string.IsNullOrEmpty(command.ImageUrl))
-        {
-            _logger.LogWarning("Clothing product {Name} must have an image URL", command.Name);
-            return false;
-        }
-
-        if (command.Price > 500)
-        {
-            if (!command.SKU.StartsWith("PREM-"))
-            {
-                _logger.LogWarning("Premium product {Name} must have SKU starting with 'PREM-'", command.Name);
-                return false;
-            }
-        }
-
-        _logger.LogInformation("All business rules passed for product: {Name}", command.Name);
-        return true;
-    }
     
     private bool IsValidElectronicProduct(CreateProductProfileCommand command)
     {
         _logger.LogInformation("Validating electronics product: {Name}", command.Name);
         
-        // Electronics must have price >= $50
         if (command.Price < 50)
         {
             _logger.LogWarning("Electronics product {Name} has price below $50", command.Name);
             return false;
         }
 
-        // Electronics must contain technology keywords
         if (!ContainTechnologyKeywords(command.Name))
         {
             _logger.LogWarning("Electronics product {Name} does not contain technology keywords", command.Name);
             return false;
         }
 
-        // Electronics must be released within 5 years
         var fiveYearsAgo = DateTime.Now.AddYears(-5);
         if (command.ReleaseDate < fiveYearsAgo)
         {

@@ -6,7 +6,7 @@ namespace ProductManagement.Validators.Attributes;
 
 public class ValidSKUAttribute : ValidationAttribute, IClientModelValidator
 {
-    public bool isValid(object? value) {
+    public override bool IsValid(object? value) {
         
         string sku = value as string ?? string.Empty;
         

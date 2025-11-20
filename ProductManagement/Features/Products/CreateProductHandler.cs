@@ -2,20 +2,19 @@ using FluentValidation;
 using ProductManagement.Persistence;
 using ProductManagement.LogEventsConstants;
 using System.Diagnostics;
+using AutoMapper;
+using ProductManagement.Features.Products.DTOs;
 
 namespace ProductManagement.Features.Products;
 
-public class CreateProductHandler(ProductManagementContext context, ILogger<CreateProductHandler> logger, IValidator<CreateProductProfileCommand> validator)
+public class CreateProductHandler(ProductManagementContext context, ILogger<CreateProductHandler> logger, IValidator<CreateProductProfileCommand> validator, IMapper mapper)
 {
     public async Task<IResult> Handle(CreateProductProfileCommand command)
     {
-        // Track operation start time
         var operationStartTime = Stopwatch.StartNew();
         
-        // Generate unique operation ID (8 characters)
         var operationId = Guid.NewGuid().ToString("N")[..8];
         
-        // Use logging scope for entire product operation
         using (logger.BeginScope(new Dictionary<string, object>
         {
             ["OperationId"] = operationId,
@@ -34,6 +33,13 @@ public class CreateProductHandler(ProductManagementContext context, ILogger<Crea
 
                 var validationStartTime = Stopwatch.StartNew();
                 
+                // Log SKU validation
+                logger.LogInformation(
+                    MyLogEvents.SKUValidationPerformed,
+                    "Performing SKU validation for product: {Name}, SKU: {SKU}",
+                    command.Name, command.SKU);
+                
+                // Log stock validation
                 logger.LogInformation(
                     MyLogEvents.StockValidationPerformed,
                     "Performing stock validation for product: {Name}, StockQuantity: {StockQuantity}",
@@ -45,7 +51,6 @@ public class CreateProductHandler(ProductManagementContext context, ILogger<Crea
                 {
                     validationStartTime.Stop();
                     
-                    // Log validation failures with product-specific details
                     logger.LogWarning(
                         MyLogEvents.ProductValidationFailed,
                         "Product validation failed. OperationId: {OperationId}, SKU: {SKU}, Name: {Name}, Errors: {Errors}, Duration: {ValidationDuration}ms",
@@ -59,10 +64,8 @@ public class CreateProductHandler(ProductManagementContext context, ILogger<Crea
                 validationStartTime.Stop();
                 var validationDuration = validationStartTime.Elapsed;
 
-                // Time database operations separately
                 var dbStartTime = Stopwatch.StartNew();
                 
-                // Log database operation start
                 logger.LogInformation(
                     MyLogEvents.DatabaseOperationStarted,
                     "Starting database operation for SKU: {SKU}",
@@ -90,23 +93,19 @@ public class CreateProductHandler(ProductManagementContext context, ILogger<Crea
                 dbStartTime.Stop();
                 var databaseSaveDuration = dbStartTime.Elapsed;
                 
-                // Log database operation completion with ProductId
                 logger.LogInformation(
                     MyLogEvents.DatabaseOperationCompleted,
                     "Database operation completed. ProductId: {ProductId}, SKU: {SKU}, Duration: {Duration}ms",
                     product.Id, command.SKU, dbStartTime.ElapsedMilliseconds);
                 
-                // Log cache operations with "all_products" cache key
                 logger.LogInformation(
                     MyLogEvents.CacheOperationStarted,
                     "Cache invalidation triggered for cache key: {CacheKey}",
                     "all_products");
                 
-                // Calculate total operation duration
                 operationStartTime.Stop();
                 var totalDuration = operationStartTime.Elapsed;
                 
-                // Log comprehensive ProductCreationMetrics for success cases
                 var metrics = new ProductCreationMetrics
                 {
                     OperationId = operationId,
@@ -125,11 +124,13 @@ public class CreateProductHandler(ProductManagementContext context, ILogger<Crea
                     "Product creation completed successfully. {@ProductCreationMetrics}",
                     metrics);
 
-                return Results.Created($"/products/{product.Id}", product);
+                // Map the Product entity to ProductProfileDto
+                var productDto = mapper.Map<ProductProfileDto>(product);
+
+                return Results.Created($"/products/{product.Id}", productDto);
             }
             catch (ValidationException ex)
             {
-                // Log error metrics in catch block with product details
                 operationStartTime.Stop();
                 
                 var errorMetrics = new ProductCreationMetrics
@@ -149,12 +150,10 @@ public class CreateProductHandler(ProductManagementContext context, ILogger<Crea
                     "Product creation failed due to validation. {@ProductCreationMetrics}",
                     errorMetrics);
                 
-                // Re-throw exception for global handler
                 throw;
             }
             catch (Exception ex)
             {
-                // Log error metrics in catch block with product details
                 operationStartTime.Stop();
                 
                 var errorMetrics = new ProductCreationMetrics
@@ -175,7 +174,6 @@ public class CreateProductHandler(ProductManagementContext context, ILogger<Crea
                     "Product creation failed with exception. {@ProductCreationMetrics}",
                     errorMetrics);
                 
-                // Re-throw exception for global handler
                 throw;
             }
         }

@@ -19,7 +19,9 @@ public class CorrelationMiddleware
 
         context.Items["CorrelationId"] = correlationId;
         context.Response.Headers.Append(CorrelationIdHeader, correlationId);
-
+        
+        _logger.LogDebug("Assigned Correlation ID: {CorrelationId}", correlationId);
+        
         using (_logger.BeginScope(new Dictionary<string, object>
         {
             ["CorrelationId"] = correlationId

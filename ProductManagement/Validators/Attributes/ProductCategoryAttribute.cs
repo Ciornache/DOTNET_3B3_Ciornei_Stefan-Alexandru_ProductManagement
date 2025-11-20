@@ -3,10 +3,11 @@ using ProductManagement.Features.Products;
 
 namespace ProductManagement.Validators.Attributes;
 
-public class ProductCategoryAttribute(List<ProductCategory> allowedCategories) : ValidationAttribute
+public class ProductCategoryAttribute(params ProductCategory[] allowedCategories) : ValidationAttribute
 {
-    private List<ProductCategory> _allowedCategories = allowedCategories;
-    public bool IsValid(object? value)
+    private ProductCategory[] _allowedCategories = allowedCategories;
+    
+    public override bool IsValid(object? value)
     {
         if (value is ProductCategory category)
         {

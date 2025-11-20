@@ -2,14 +2,13 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using ProductManagement.Features.Products;
 using ProductManagement.Features.Products.DTOs;
 using ProductManagement.Features.Products.Mappers;
-using ProductManagement.LogEventsConstants;
 using ProductManagement.Mappers;
+using ProductManagement.LogEventsConstants;
 using ProductManagement.Persistence;
 using ProductManagement.Validators;
 using Xunit;
@@ -23,14 +22,13 @@ public class CreateProductHandlerIntegrationTests : IDisposable
     private readonly IMemoryCache _cache;
     private readonly Mock<ILogger<CreateProductHandler>> _loggerMock;
     private readonly CreateProductHandler _handler;
-    private readonly string _databaseName;
 
     public CreateProductHandlerIntegrationTests()
     {
         // Set up in-memory database with unique name
-        _databaseName = $"ProductTestDb_{Guid.NewGuid()}";
+        var databaseName = $"ProductTestDb_{Guid.NewGuid()}";
         var options = new DbContextOptionsBuilder<ProductManagementContext>()
-            .UseInMemoryDatabase(databaseName: _databaseName)
+            .UseInMemoryDatabase(databaseName: databaseName)
             .Options;
         
         _context = new ProductManagementContext(options);
@@ -52,11 +50,11 @@ public class CreateProductHandlerIntegrationTests : IDisposable
         // Mock ILogger<CreateProductProfileValidator>
         var validatorLoggerMock = new Mock<ILogger<CreateProductProfileValidator>>();
 
-        // Create validator with dependencies (logger first, then context)
+        // Create validator with dependencies
         var validator = new CreateProductProfileValidator(validatorLoggerMock.Object, _context);
 
-        // Create handler instance with all dependencies
-        _handler = new CreateProductHandler(_context, _loggerMock.Object, validator);
+        // Create handler instance with all dependencies (now including IMapper)
+        _handler = new CreateProductHandler(_context, _loggerMock.Object, validator, _mapper);
     }
 
     [Fact]
@@ -65,41 +63,48 @@ public class CreateProductHandlerIntegrationTests : IDisposable
         // Arrange: Create valid Electronics product request with all properties
         var request = new CreateProductProfileCommand
         {
-            Name = "Smart Device Pro",
+            Name = "Smart Device Pro", // Contains "Smart" - a technology keyword
             Brand = "Tech Masters",
-            SKU = "PREM-TECH-LAPTOP-24", // SKU updated to meet premium product rule (Price > 500)
-            Price = 1299.99m,
+            SKU = "PREM-TECH-LAPTOP-24", // Starts with PREM- for premium product
+            Price = 1299.99m, // Price > 500 requires PREM- prefix
             Category = ProductCategory.Electronics,
-            StockQuantity = 15,
+            StockQuantity = 15, // ≤ 20 for expensive products
             ImageUrl = "https://example.com/laptop.jpg",
-            ReleaseDate = DateTime.UtcNow.AddYears(-1) // Updated to be clearly within the 5-year rule
+            ReleaseDate = DateTime.UtcNow.AddMonths(-6) // Within 5 years
         };
 
         // Act: Call handler
         var result = await _handler.Handle(request);
 
-        // Assert: Verify Created result type
+        // Assert: Verify Created result type with ProductProfileDto
         Assert.NotNull(result);
-        var createdResult = Assert.IsType<Microsoft.AspNetCore.Http.HttpResults.Created<Product>>(result);
-        var product = createdResult.Value;
+        var createdResult = Assert.IsType<Microsoft.AspNetCore.Http.HttpResults.Created<ProductProfileDto>>(result);
+        var productProfileDto = createdResult.Value;
 
-        // Assert: Check basic properties on the created entity
-        Assert.NotNull(product);
-        Assert.Equal(request.Name, product.Name);
-        Assert.Equal(request.Brand, product.Brand);
-        Assert.Equal(request.SKU, product.SKU);
+        // Assert: Check basic properties and advanced mappings on the DTO
+        Assert.NotNull(productProfileDto);
+        Assert.Equal(request.Name, productProfileDto.Name);
+        Assert.Equal(request.Brand, productProfileDto.Brand);
+        Assert.Equal(request.SKU, productProfileDto.SKU);
 
-        // Now, test the advanced mappings by mapping the created product to the DTO
-        var productProfileDto = _mapper.Map<ProductProfileDto>(product);
-
-        // Assert: Check advanced and conditional mappings
+        // Assert: Check CategoryDisplayName = "Electronics & Technology"
         Assert.Equal("Electronics & Technology", productProfileDto.CategoryDisplayName);
-        Assert.Equal("TM", productProfileDto.BrandInitials); // For "Tech Masters"
-        Assert.Contains("months", productProfileDto.ProductAge); // ProductAge is dynamic, check for keyword
-        Assert.StartsWith("$", productProfileDto.FormattedPrice); // Check for currency symbol
-        Assert.Equal("In Stock", productProfileDto.AvailabilityStatus); // Stock is > 0
+        
+        // Assert: Check BrandInitials for two-word brand "Tech Masters" -> "TM"
+        Assert.Equal("TM", productProfileDto.BrandInitials);
+        
+        // Assert: Check ProductAge calculation (should contain time information)
+        Assert.NotNull(productProfileDto.ProductAge);
+        Assert.Contains("month", productProfileDto.ProductAge, StringComparison.OrdinalIgnoreCase);
+        
+        // Assert: Check FormattedPrice starts with currency symbol
+        Assert.StartsWith("$", productProfileDto.FormattedPrice);
+        Assert.Contains("1,299.99", productProfileDto.FormattedPrice); // Price includes comma separator
+        
+        // Assert: Check AvailabilityStatus based on stock
+        Assert.Equal("In Stock", productProfileDto.AvailabilityStatus);
 
-        // Verify ProductCreationStarted log called once
+        // Assert: Verify ProductCreationStarted log called once
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Information,
@@ -170,12 +175,12 @@ public class CreateProductHandlerIntegrationTests : IDisposable
         // Arrange: Create valid Home product request
         var request = new CreateProductProfileCommand
         {
-            Name = "Wooden Coffee Table",
+            Name = "Wooden Coffee Table", // Appropriate name for home products
             Brand = "Home Essentials",
             SKU = "HOME-TABLE-2024",
-            Price = 150.00m,
+            Price = 150.00m, // Price ≤ $200 for Home category
             Category = ProductCategory.Home,
-            StockQuantity = 20, // Changed from 25 to 20 to satisfy the stock limit for expensive products
+            StockQuantity = 20, // ≤ 20 for expensive products (>$100)
             ImageUrl = "https://example.com/table.jpg",
             ReleaseDate = DateTime.UtcNow.AddMonths(-2)
         };
@@ -183,28 +188,26 @@ public class CreateProductHandlerIntegrationTests : IDisposable
         // Act: Call handler
         var result = await _handler.Handle(request);
 
-        // Assert: Verify Created result type
+        // Assert: Verify Created result type with ProductProfileDto
         Assert.NotNull(result);
-        var createdResult = Assert.IsType<Microsoft.AspNetCore.Http.HttpResults.Created<Product>>(result);
-        var product = createdResult.Value;
+        var createdResult = Assert.IsType<Microsoft.AspNetCore.Http.HttpResults.Created<ProductProfileDto>>(result);
+        var productProfileDto = createdResult.Value;
 
-        Assert.NotNull(product);
+        Assert.NotNull(productProfileDto);
         
-        // The actual Product entity should store the original price
-        // The discount is applied at the mapping/DTO level, not at entity level
-        Assert.Equal(150.00m, product.Price);
-        Assert.Equal(ProductCategory.Home, product.Category);
-        
-        // Now let's test the mapping with AutoMapper
-        var productProfileDto = _mapper.Map<ProductProfileDto>(product);
+        // The DTO should have the original product data transformed
+        Assert.Equal(request.Name, productProfileDto.Name);
+        Assert.Equal(request.Brand, productProfileDto.Brand);
+        Assert.Equal(request.SKU, productProfileDto.SKU);
         
         // Assert: Check CategoryDisplayName = "Home & Garden"
         Assert.Equal("Home & Garden", productProfileDto.CategoryDisplayName);
         
         // Assert: Check Price has 10% discount applied (in the DTO mapping)
-        Assert.Equal("$135.00", productProfileDto.FormattedPrice); // 150 * 0.9 = 135
+        // 150 * 0.9 = 135.00
+        Assert.Equal("$135.00", productProfileDto.FormattedPrice);
         
-        // Assert: Check ImageUrl is null (content filtering)
+        // Assert: Check ImageUrl is null (content filtering for Home category)
         Assert.Null(productProfileDto.ImageUrl);
     }
 

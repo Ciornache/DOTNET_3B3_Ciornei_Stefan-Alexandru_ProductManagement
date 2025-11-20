@@ -7,13 +7,12 @@ public class PriceRangeAttribute(float minPrice, float maxPrice) : ValidationAtt
     private float _minPrice = minPrice;
     private float _maxPrice = maxPrice;
 
-    public bool IsValid(object? value)
+    public override bool IsValid(object? value)
     {
         if (value is float price)
         {
             return price >= _minPrice && price <= _maxPrice;
         }
-
         return false;
     }
 }
