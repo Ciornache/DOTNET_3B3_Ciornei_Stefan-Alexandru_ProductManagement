@@ -7,8 +7,17 @@ using ProductManagement.Features.Products.DTOs;
 
 namespace ProductManagement.Features.Products;
 
+/// <summary>
+/// Handles the creation of new products with comprehensive validation, logging, and performance tracking.
+/// </summary>
 public class CreateProductHandler(ProductManagementContext context, ILogger<CreateProductHandler> logger, IValidator<CreateProductProfileCommand> validator, IMapper mapper)
 {
+    /// <summary>
+    /// Processes a product creation request with validation, database persistence, and detailed metrics logging.
+    /// </summary>
+    /// <param name="command">The command containing product details to create.</param>
+    /// <returns>An IResult containing the created ProductProfileDto or validation errors.</returns>
+    /// <exception cref="ValidationException">Thrown when product validation fails.</exception>
     public async Task<IResult> Handle(CreateProductProfileCommand command)
     {
         var operationStartTime = Stopwatch.StartNew();

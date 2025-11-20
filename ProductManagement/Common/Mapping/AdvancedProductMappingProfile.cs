@@ -5,8 +5,14 @@ using ProductManagement.Features.Products.Resolvers;
 
 namespace ProductManagement.Common.Mapping;
 
+/// <summary>
+/// Defines advanced AutoMapper mappings for products with custom resolvers and conditional logic.
+/// </summary>
 public class AdvancedProductMappingProfile : Profile
 {
+    /// <summary>
+    /// Initializes advanced mapping configuration including custom resolvers for category-specific transformations.
+    /// </summary>
     public AdvancedProductMappingProfile()
     {
         CreateMap<CreateProductProfileCommand, Product>()

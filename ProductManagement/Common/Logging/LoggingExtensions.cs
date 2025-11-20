@@ -1,7 +1,15 @@
 ﻿namespace ProductManagement.Common.Logging;
 
+/// <summary>
+/// Provides extension methods for logging product-related operations and metrics.
+/// </summary>
 public static class LoggingExtensions
 {
+    /// <summary>
+    /// Logs comprehensive metrics for product creation operations including timing and success status.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="metrics">The product creation metrics to log.</param>
     public static void LogProductCreationMetrics(
         this ILogger logger,
         ProductCreationMetrics metrics)

@@ -1,7 +1,8 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using ProductManagement.Features.Products;
@@ -14,6 +15,9 @@ using Xunit;
 
 namespace ProductManagement.Tests;
 
+/// <summary>
+/// Integration tests for the CreateProductHandler to verify product creation functionality with validation, mapping, and logging.
+/// </summary>
 public class CreateProductHandlerIntegrationTests : IDisposable
 {
     private readonly ProductManagementContext _context;
@@ -22,6 +26,9 @@ public class CreateProductHandlerIntegrationTests : IDisposable
     private readonly Mock<ILogger<CreateProductHandler>> _loggerMock;
     private readonly CreateProductHandler _handler;
 
+    /// <summary>
+    /// Initializes a new instance of the test class with in-memory database, AutoMapper configuration, cache, and mocked dependencies.
+    /// </summary>
     public CreateProductHandlerIntegrationTests()
     {
         var databaseName = $"ProductTestDb_{Guid.NewGuid()}";
@@ -49,6 +56,11 @@ public class CreateProductHandlerIntegrationTests : IDisposable
         _handler = new CreateProductHandler(_context, _loggerMock.Object, validator, _mapper);
     }
 
+    /// <summary>
+    /// Tests that a valid electronics product request successfully creates a product with correct mappings including
+    /// category display name, brand initials, product age, formatted price, and availability status.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
     [Fact]
     public async Task Handle_ValidElectronicsProductRequest_CreatesProductWithCorrectMappings()
     {
@@ -97,6 +109,11 @@ public class CreateProductHandlerIntegrationTests : IDisposable
             Times.Once);
     }
 
+    /// <summary>
+    /// Tests that attempting to create a product with a duplicate SKU throws a ValidationException
+    /// and logs the validation failure event.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
     [Fact]
     public async Task Handle_DuplicateSKU_ThrowsValidationExceptionWithLogging()
     {
@@ -146,6 +163,11 @@ public class CreateProductHandlerIntegrationTests : IDisposable
             Times.Once);
     }
 
+    /// <summary>
+    /// Tests that a Home category product applies the 10% discount to the price and sets ImageUrl to null
+    /// as part of conditional mapping based on product category.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
     [Fact]
     public async Task Handle_HomeProductRequest_AppliesDiscountAndConditionalMapping()
     {
@@ -180,6 +202,9 @@ public class CreateProductHandlerIntegrationTests : IDisposable
         Assert.Null(productProfileDto.ImageUrl);
     }
 
+    /// <summary>
+    /// Cleans up test resources by deleting the in-memory database and disposing of the context and cache.
+    /// </summary>
     public void Dispose()
     {
         _context.Database.EnsureDeleted();

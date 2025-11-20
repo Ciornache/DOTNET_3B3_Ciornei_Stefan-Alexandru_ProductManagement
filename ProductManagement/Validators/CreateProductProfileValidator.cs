@@ -5,6 +5,9 @@ using ProductManagement.Features.Products;
 
 namespace ProductManagement.Validators;
 
+/// <summary>
+/// Validates product creation requests with comprehensive business rules including category-specific validations.
+/// </summary>
 public class CreateProductProfileValidator : AbstractValidator<CreateProductProfileCommand>
 {
     private readonly ILogger<CreateProductProfileValidator> _logger;
@@ -123,12 +126,24 @@ public class CreateProductProfileValidator : AbstractValidator<CreateProductProf
             .WithMessage("Premium products (>$500) must have SKU starting with 'PREM-'");
     }
 
+    /// <summary>
+    /// Validates that the product name is not in the blocked names list.
+    /// </summary>
+    /// <param name="name">The product name to validate.</param>
+    /// <returns>True if the name is valid; otherwise, false.</returns>
     private bool BeValidName(string name)
     {
         _logger.LogInformation("Validating name: {Name}", name);
         return !_blockedNames.Contains(name);
     }
 
+    /// <summary>
+    /// Validates that the product name and brand combination is unique in the database.
+    /// </summary>
+    /// <param name="command">The product command containing name and brand.</param>
+    /// <param name="name">The product name to check.</param>
+    /// <param name="cancellationToken">Cancellation token for async operation.</param>
+    /// <returns>True if the combination is unique; otherwise, false.</returns>
     private async Task<bool> BeUniqueName(CreateProductProfileCommand command, string name, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Checking uniqueness for Name: {Name} and Brand: {Brand}", name, command.Brand);
@@ -142,18 +157,34 @@ public class CreateProductProfileValidator : AbstractValidator<CreateProductProf
         return !exists;
     }
 
+    /// <summary>
+    /// Validates that the brand name contains only allowed characters (letters, digits, spaces, hyphens, ampersands, dots).
+    /// </summary>
+    /// <param name="brand">The brand name to validate.</param>
+    /// <returns>True if the brand name is valid; otherwise, false.</returns>
     private bool BeValidBrandName(string brand)
     {
         _logger.LogInformation("Validating brand name: {Brand}", brand);
         return brand.All(ch => char.IsLetterOrDigit(ch) || char.IsWhiteSpace(ch) || ch == '-' || ch == '&' || ch == '.');
     }
 
+    /// <summary>
+    /// Validates that the SKU follows the correct format (uppercase letters, numbers, and hyphens).
+    /// </summary>
+    /// <param name="sku">The SKU to validate.</param>
+    /// <returns>True if the SKU format is valid; otherwise, false.</returns>
     private bool BeValidSKU(string sku)
     {
         _logger.LogInformation("Validating SKU format: {SKU}", sku);
         return System.Text.RegularExpressions.Regex.IsMatch(sku, "^[A-Z0-9-]+$");
     }
 
+    /// <summary>
+    /// Validates that the SKU is unique in the database.
+    /// </summary>
+    /// <param name="sku">The SKU to check for uniqueness.</param>
+    /// <param name="cancellationToken">Cancellation token for async operation.</param>
+    /// <returns>True if the SKU is unique; otherwise, false.</returns>
     private async Task<bool> BeUniqueSKU(string sku, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Checking SKU uniqueness: {SKU}", sku);
@@ -169,6 +200,11 @@ public class CreateProductProfileValidator : AbstractValidator<CreateProductProf
         return !exists;
     }
 
+    /// <summary>
+    /// Validates that the image URL is properly formatted and has a valid image extension.
+    /// </summary>
+    /// <param name="imageUrl">The image URL to validate.</param>
+    /// <returns>True if the URL is valid or empty; otherwise, false.</returns>
     private bool BeValidImageUrl(string? imageUrl)
     {
         if (string.IsNullOrEmpty(imageUrl))
@@ -180,6 +216,11 @@ public class CreateProductProfileValidator : AbstractValidator<CreateProductProf
         return System.Text.RegularExpressions.Regex.IsMatch(imageUrl, urlPattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
     }
     
+    /// <summary>
+    /// Validates that an electronics product meets all business requirements (price, keywords, release date).
+    /// </summary>
+    /// <param name="command">The product command to validate.</param>
+    /// <returns>True if all electronics requirements are met; otherwise, false.</returns>
     private bool IsValidElectronicProduct(CreateProductProfileCommand command)
     {
         _logger.LogInformation("Validating electronics product: {Name}", command.Name);
@@ -206,12 +247,22 @@ public class CreateProductProfileValidator : AbstractValidator<CreateProductProf
         return true;
     }
     
+    /// <summary>
+    /// Checks if the product name contains technology-related keywords.
+    /// </summary>
+    /// <param name="name">The product name to check.</param>
+    /// <returns>True if technology keywords are found; otherwise, false.</returns>
     private bool ContainTechnologyKeywords(string name)
     {
         _logger.LogInformation("Checking technology keywords in name: {Name}", name);
         return _technologyKeywords.Any(keyword => name.Contains(keyword, StringComparison.OrdinalIgnoreCase));
     }
 
+    /// <summary>
+    /// Validates that the product name does not contain inappropriate words for home products.
+    /// </summary>
+    /// <param name="name">The product name to check.</param>
+    /// <returns>True if the name is appropriate for home products; otherwise, false.</returns>
     private bool BeAppropriateForHome(string name)
     {
         _logger.LogInformation("Checking home product appropriateness for name: {Name}", name);
